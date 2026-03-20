@@ -18,12 +18,13 @@ WORKDIR /app
 # Copy the built JAR from builder stage
 COPY --from=builder /build/target/chatbot-1.0.0.jar app.jar
 
-# Expose the port
-EXPOSE 8085
+# Default port (Render injects PORT env var)
+ENV PORT=8085
+EXPOSE ${PORT}
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8085/ || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT}/ || exit 1
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
